@@ -35,8 +35,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
       "eject": "react-scripts eject",
-      "deploy:gh": "gh-pages -d ./build/ --repo https://github.com/dyor-market/fair3d -t true --branch gh-pages2",
-      "deploy": "cross-env ASSET_PREFIX=/ yarn build && yarn deploy:gh"
+      "deploy:gh": "gh-pages -d ./build/ --repo https://github.com/dyor-market/fair3d -t true --branch f3d",
+      "deploy": "yarn build && yarn deploy:gh"
   },
   "eslintConfig": {
     "extends": [
