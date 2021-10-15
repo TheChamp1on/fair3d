@@ -23,7 +23,6 @@ import Alert from '@material-ui/lab/Alert';
 
 import * as anchor from '@project-serum/anchor';
 
-import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletDialogButton } from '@solana/wallet-adapter-material-ui';
@@ -45,6 +44,8 @@ import {
 
 import { formatNumber, getAtaForMint, toDate } from './utils';
 import Countdown from 'react-countdown';
+
+const CYRIIS_PER_COPE = 100;
 
 const ConnectButton = styled(WalletDialogButton)`
   width: 100%;
@@ -341,11 +342,6 @@ const Home = (props: HomeProps) => {
       }
 
       try {
-        const balance = await props.connection.getBalance(
-          anchorWallet.publicKey,
-        );
-        setYourSOLBalance(balance);
-
         const state = await getFairLaunchState(
           anchorWallet,
           props.fairLaunchId,
@@ -354,30 +350,10 @@ const Home = (props: HomeProps) => {
 
         setFairLaunch(state);
 
-        try {
-          if (state.state.tokenMint) {
-            const fairLaunchBalance =
-              await props.connection.getTokenAccountBalance(
-                (
-                  await getAtaForMint(
-                    state.state.tokenMint,
-                    anchorWallet.publicKey,
-                  )
-                )[0],
-              );
-
-            if (fairLaunchBalance.value) {
-              setFairLaunchBalance(fairLaunchBalance.value.uiAmount || 0);
-            }
-          }
-        } catch (e) {
-          console.log('Problem getting fair launch token balance');
-          console.log(e);
-        }
         setContributed(
           (
             state.state.currentMedian || state.state.data.priceRangeStart
-          ).toNumber() / LAMPORTS_PER_SOL,
+          ).toNumber() / CYRIIS_PER_COPE,
         );
       } catch (e) {
         console.log('Problem getting fair launch state');
@@ -544,39 +520,11 @@ const Home = (props: HomeProps) => {
     fairLaunch?.state.data.phaseTwoEnd &&
     candyMachine?.state.goLiveDate.lt(fairLaunch?.state.data.phaseTwoEnd);
 
-  const notEnoughSOL = !!(
-    yourSOLBalance != null &&
-    fairLaunch?.state.data.priceRangeStart &&
-    fairLaunch?.state.data.fee &&
-    yourSOLBalance + (fairLaunch?.ticket?.data?.amount.toNumber() || 0) <
-      contributed * LAMPORTS_PER_SOL +
-        fairLaunch?.state.data.fee.toNumber() +
-        0.01
-  );
+  const notEnoughSOL = false;
 
   return (
     <Container style={{ marginTop: 100 }}>
-      <Container maxWidth="xs" style={{ position: 'relative' }}>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-          }}
-        >
-          <Link
-            component="button"
-            variant="body2"
-            color="textSecondary"
-            align="right"
-            onClick={() => {
-              setAnitRugPolicyOpen(true);
-            }}
-          >
-            Anti-Rug Policy
-          </Link>
-        </div>
-      </Container>
+     
       <Container maxWidth="xs" style={{ position: 'relative' }}>
         <Paper
           style={{ padding: 24, backgroundColor: '#151A1F', borderRadius: 6 }}
@@ -662,17 +610,16 @@ const Home = (props: HomeProps) => {
                     <Typography variant="h6" style={{ fontWeight: 900 }}>
                       {formatNumber.format(
                         (fairLaunch?.ticket.data?.amount.toNumber() || 0) /
-                          LAMPORTS_PER_SOL,
+                          CYRIIS_PER_COPE,
                       )}{' '}
                       SOL
                     </Typography>
                   </>
                 ) : [Phase.Phase0, Phase.Phase1].includes(phase) ? (
                   <Typography>
-                    The last person to bid wins the honeypot. <br />
-                    Seriously, check the code. https://github.com/dyor-market/fair3d - or run the 'show' command on cli to see updated authority ;).<br />
-                    The counter resets every time some new address bids. <br />
-                    This isn't necessarily what @redacted_j had in mind. <br />
+                    The last person to bid wins around 90% the treasurypot. <br />
+
+                    10% of bidders win around 10% treasurypot. <br />
                     
                   </Typography>
                 ) : (
@@ -871,8 +818,7 @@ const Home = (props: HomeProps) => {
               container
               justifyContent="space-between"
               color="textSecondary"
-            >
-              <Link
+            > <Link
                 component="button"
                 variant="body2"
                 color="textSecondary"
@@ -881,7 +827,7 @@ const Home = (props: HomeProps) => {
                   setHowToOpen(true);
                 }}
               >
-                How this raffle works
+                How this game works
               </Link>
               {fairLaunch?.ticket.data && (
                 <Link
@@ -944,7 +890,7 @@ const Home = (props: HomeProps) => {
                       {fairLaunch.state.data.antiRugSetting.reserveBp / 100}% (◎{' '}
                       {(fairLaunch?.treasury *
                         fairLaunch.state.data.antiRugSetting.reserveBp) /
-                        (LAMPORTS_PER_SOL * 10000)}
+                        (CYRIIS_PER_COPE * 10000)}
                       ) of the pledged amount in a locked state until all but{' '}
                       {fairLaunch.state.data.antiRugSetting.tokenRequirement.toNumber()}{' '}
                       NFTs (out of up to{' '}
@@ -1032,7 +978,7 @@ const Home = (props: HomeProps) => {
                     setHowToOpen(true);
                   }}
                 >
-                  How it works
+                  How to win
                 </Link>
                 <IconButton
                   aria-label="close"
@@ -1044,60 +990,38 @@ const Home = (props: HomeProps) => {
               </MuiDialogTitle>
               <MuiDialogContent>
                 <Typography variant="h6">
-                  Phase 1 - Set the fair price:
+                  Phase 1 - The Game:
                 </Typography>
                 <Typography gutterBottom color="textSecondary">
-                  Enter a bid in the range provided by the artist. The median of
-                  all bids will be the "fair" price of the raffle ticket.{' '}
+                  Every time someone new bids the price increases and the timer resets. 
+                  Dev takes 1% of every bid, which doesn't get to see treasurypot.
+                  That top bidder becomes the Authority.
+                  Anyone at any phase can check the code on dunncreativess/fair3d,
+                  or run the show command on the cli.
+                  Metaplex team can assist you.
                 
                 </Typography>
                 <Typography variant="h6">Phase 2 - Grace period:</Typography>
                 <Typography gutterBottom color="textSecondary">
-                  If your bid was at or above the fair price, you automatically
-                  get a raffle ticket at that price. There's nothing else you
-                  need to do. Your excess SOL will be returned to you when the
-                  Fair Launch authority withdraws from the treasury. If your bid
-                  is below the median price, you can still opt in at the fair
-                  price during this phase.
+                  You can optionally pay the median in order to qualify for a ticket, in case your last bid was under the median.
                 </Typography>
-                {candyMachinePredatesFairLaunch ? (
-                  <>
-                    <Typography variant="h6">
-                      Phase 3 - The Candy Machine:
-                    </Typography>
-                    <Typography gutterBottom color="textSecondary">
-                      Everyone who got a raffle ticket at the fair price is
-                      entered to win an NFT. If you win an NFT, congrats. If you
-                      don’t, no worries, your SOL will go right back into your
-                      wallet.
-                    </Typography>
-                  </>
-                ) : (
-                  <>
+                
                     <Typography variant="h6">Phase 3 - The Lottery:</Typography>
                     <Typography gutterBottom color="textSecondary">
-                      Everyone who got a raffle ticket at the fair price is
-                      entered to win a Fair Launch Token that entitles them to
-                      an NFT at a later date using a Candy Machine here. If you
-                      don’t win, no worries, your SOL will go right back into
-                      your wallet.
+                      If you get a ticket, the Authority must conduct a lottery. 
+                      The Metaplex team can assist the Authority.
+                      There are 10% of the total unique addreses bidding as winning tickets.
+
+
                     </Typography>
                     <Typography variant="h6">
                       Phase 4 - The Candy Machine:
                     </Typography>
                     <Typography gutterBottom color="textSecondary">
-                      On{' '}
-                      {candyMachine?.state.goLiveDate
-                        ? toDate(
-                            candyMachine?.state.goLiveDate,
-                          )?.toLocaleString()
-                        : ' some later date'}
-                      , you will be able to exchange your Fair Launch token for
-                      an NFT using the Candy Machine at this site by pressing
-                      the Mint Button.
+                      Winners of lottery share 10% treasurypot when you punch your ticket.
+                      You also get an NFT.
+                      The Authority can punch everyone's tickets for them. When withdrawing, the Authority gets what's left of the treasurypot - 90%.
                     </Typography>
-                  </>
-                )}
               </MuiDialogContent>
             </Dialog>
 
@@ -1156,7 +1080,7 @@ const Home = (props: HomeProps) => {
                 >
                   ◎{' '}
                   {formatNumber.format(
-                    (fairLaunch?.treasury || 0) / LAMPORTS_PER_SOL,
+                    (fairLaunch?.treasury || 0) / CYRIIS_PER_COPE,
                   )}
                 </Typography>
               </Grid>

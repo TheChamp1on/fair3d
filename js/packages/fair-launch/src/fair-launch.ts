@@ -270,6 +270,9 @@ export const punchTicket = async (
       //@ts-ignore
       tokenMint: fairLaunch.state.tokenMint,
       tokenProgram: TOKEN_PROGRAM_ID,
+      systemProgram: anchor.web3.SystemProgram.programId,
+      treasury: fairLaunch.state.treasury,
+      buyer: anchorWallet.publicKey,
     },
     instructions: instructions.length > 0 ? instructions : undefined,
   });
@@ -333,6 +336,7 @@ const getSetupForTicketing = async (
       amountLamports = Math.ceil(amount * LAMPORTS_PER_SOL);
     }
   } else {
+    amountLamports = Math.ceil(amount * 10 ** 9);
     const transferAuthority = anchor.web3.Keypair.generate();
     signers.push(transferAuthority);
     // NOTE this token impl will not work till you get decimal mantissa and multiply...
@@ -359,7 +363,7 @@ const getSetupForTicketing = async (
         //@ts-ignore
 
         // TODO: get mint decimals
-        amountNumber + fairLaunch.state.data.fees.toNumber(),
+        amountLamports + fairLaunch.state.data.fees.toNumber(),
       ),
     );
 
@@ -569,6 +573,7 @@ export const purchaseTicket = async (
           fairLaunch: fairLaunch.id,
           //@ts-ignore
           treasury: fairLaunch.state.treasury,
+          dev: fairLaunch.state.dev,
           buyer: anchorWallet.publicKey,
           payer: anchorWallet.publicKey,
           systemProgram: anchor.web3.SystemProgram.programId,

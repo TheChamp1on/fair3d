@@ -2,13 +2,12 @@ import * as anchor from '@project-serum/anchor';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { SystemProgram } from '@solana/web3.js';
 import {
-  LAMPORTS_PER_SOL,
   SYSVAR_RENT_PUBKEY,
   TransactionInstruction,
 } from '@solana/web3.js';
-
+const CYRIIS_PER_COPE = 100;
 export const FAIR_LAUNCH_PROGRAM_ID = new anchor.web3.PublicKey(
-  'DGjTcPhTDjk3JTE1YsvqHMxAtFZbMygJcYRee3hzcfwS',
+  '7q1CvL7v9MnyMwdA7sTcvoSrc1feVUR3nsr87Go8wsBB',
 );
 
 export const toDate = (value?: anchor.BN) => {
@@ -38,7 +37,7 @@ export const formatNumber = {
       return undefined;
     }
 
-    return val.toNumber() / LAMPORTS_PER_SOL;
+    return val.toNumber() / CYRIIS_PER_COPE;
   },
 };
 
