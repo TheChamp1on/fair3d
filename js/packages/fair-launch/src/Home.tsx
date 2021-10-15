@@ -670,7 +670,7 @@ const Home = (props: HomeProps) => {
                 ) : [Phase.Phase0, Phase.Phase1].includes(phase) ? (
                   <Typography>
                     The last person to bid wins the honeypot. <br />
-                    Seriously, check the code. https://github.com/dyor-market/fair3d<br />
+                    Seriously, check the code. https://github.com/dyor-market/fair3d - or run the 'show' command on cli to see updated authority ;).<br />
                     The counter resets every time some new address bids. <br />
                     This isn't necessarily what @redacted_j had in mind. <br />
                     
