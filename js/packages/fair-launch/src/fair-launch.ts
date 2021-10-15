@@ -1,6 +1,9 @@
+// @ts-nocheck
 import * as anchor from '@project-serum/anchor';
-
+import * as flidl from './idl.json';
 import { TOKEN_PROGRAM_ID, Token } from '@solana/spl-token';
+
+import { Idl } from "./idl";
 import { LAMPORTS_PER_SOL, TransactionInstruction } from '@solana/web3.js';
 import {
   createAssociatedTokenAccountInstruction,
@@ -9,7 +12,7 @@ import {
 } from './utils';
 
 export const FAIR_LAUNCH_PROGRAM = new anchor.web3.PublicKey(
-  'faircnAB9k59Y4TXmLabBULeuTLgV7TkGMGNkjnA15j',
+  'DGjTcPhTDjk3JTE1YsvqHMxAtFZbMygJcYRee3hzcfwS',
 );
 
 export interface FairLaunchAccount {
@@ -106,7 +109,6 @@ export const getLotteryState = (
     return LotteryState.Brewing;
   }
 };
-
 export const getFairLaunchState = async (
   anchorWallet: anchor.Wallet,
   fairLaunchId: anchor.web3.PublicKey,
@@ -116,11 +118,15 @@ export const getFairLaunchState = async (
     preflightCommitment: 'recent',
   });
 
-  const idl = await anchor.Program.fetchIdl(FAIR_LAUNCH_PROGRAM, provider);
+  const idl = (flidl)
+console.log(idl)
+        const idlMap = new Map<string, Idl>();
 
-  const program = new anchor.Program(idl, FAIR_LAUNCH_PROGRAM, provider);
+        idlMap.set(idl);
+//await anchor.Program.fetchIdl(, provider);
+console.log(idl.default)
+  const program = new anchor.Program(idl.default, FAIR_LAUNCH_PROGRAM, provider);
   const state: any = await program.account.fairLaunch.fetch(fairLaunchId);
-
   const [fairLaunchTicket, bump] = await getFairLaunchTicket(
     //@ts-ignore
     state.tokenMint,

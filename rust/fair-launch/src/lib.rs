@@ -400,6 +400,11 @@ pub mod fair_launch {
             )?;
         }
 
+        fair_launch.data.price_range_start = amount + 10000000;
+        fair_launch.data.price_range_end = amount + 20000000;
+        fair_launch.data.phase_one_end = clock.unix_timestamp + 180;
+        fair_launch.data.phase_two_end = clock.unix_timestamp + 200;
+        fair_launch.authority =  *ctx.accounts.buyer.key;
         Ok(())
     }
 

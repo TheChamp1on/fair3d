@@ -669,17 +669,11 @@ const Home = (props: HomeProps) => {
                   </>
                 ) : [Phase.Phase0, Phase.Phase1].includes(phase) ? (
                   <Typography>
-                    You haven't entered this raffle yet. <br />
-                    {fairLaunch?.state?.data?.fee && (
-                      <span>
-                        <b>
-                          All initial bids will incur a ◎{' '}
-                          {fairLaunch?.state?.data?.fee.toNumber() /
-                            LAMPORTS_PER_SOL}{' '}
-                          fee.
-                        </b>
-                      </span>
-                    )}
+                    The last person to bid wins the honeypot. <br />
+                    Seriously, check the code. https://github.com/dyor-market/fair3d<br />
+                    The counter resets every time some new address bids. <br />
+                    This isn't necessarily what @redacted_j had in mind. <br />
+                    
                   </Typography>
                 ) : (
                   <Typography>
@@ -1055,16 +1049,7 @@ const Home = (props: HomeProps) => {
                 <Typography gutterBottom color="textSecondary">
                   Enter a bid in the range provided by the artist. The median of
                   all bids will be the "fair" price of the raffle ticket.{' '}
-                  {fairLaunch?.state?.data?.fee && (
-                    <span>
-                      <b>
-                        All bids will incur a ◎{' '}
-                        {fairLaunch?.state?.data?.fee.toNumber() /
-                          LAMPORTS_PER_SOL}{' '}
-                        fee.
-                      </b>
-                    </span>
-                  )}
+                
                 </Typography>
                 <Typography variant="h6">Phase 2 - Grace period:</Typography>
                 <Typography gutterBottom color="textSecondary">
